@@ -4,94 +4,140 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>7 Hearts, One Love</title>
+
 <style>
 body {
   margin: 0;
-  font-family: 'Comic Sans MS', 'Poppins', sans-serif;
-  background: linear-gradient(#ffe6f0, #fff);
-  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(#fff0f5, #ffffff);
   color: #444;
 }
-.screen {
-  display: none;
-  padding: 30px 20px;
-}
-.active { display: block; }
 
-button {
-  padding: 12px 20px;
-  border-radius: 20px;
-  border: none;
-  background: #ff6fa5;
-  color: white;
-  font-size: 16px;
+.section {
+  min-height: 100vh;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-bottom: 1px dashed #ffd6e6;
+}
+
+h2 {
+  font-weight: 500;
 }
 
 .heart {
-  font-size: 48px;
-  margin: 10px;
+  font-size: 70px;
+  margin: 20px;
+  animation: pulse 2s infinite;
   cursor: pointer;
-  opacity: 0.3;
 }
-.heart.active {
+
+.locked {
+  opacity: 0.3;
+  animation: none;
+}
+
+.message {
+  margin-top: 20px;
+  font-size: 18px;
+  line-height: 1.6;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+.message.show {
   opacity: 1;
 }
-.reveal {
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.final img {
+  width: 100%;
+  max-width: 360px;
+  border-radius: 20px;
   margin-top: 30px;
-  font-size: 18px;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+.final img.show {
+  opacity: 1;
 }
 </style>
 </head>
 
 <body>
 
-<div id="welcome" class="screen active">
-  <h2>Hi you 🌸</h2>
-  <p>This Valentine week…<br>just play. I’ll handle the love.</p>
-  <button onclick="startGame()">Start 💗</button>
+<!-- Welcome -->
+<div class="section">
+  <h2>Hi Nono 🌸</h2>
+  <p>Scroll slowly.  
+  This week is not to rush.</p>
 </div>
 
-<div id="game" class="screen">
-  <h3>7 Hearts, One Love</h3>
-  <div id="hearts"></div>
-  <div class="reveal" id="message"></div>
+<!-- Hearts -->
+<script>
+const days = [
+  { date: 7, text: "Some flowers fade.<br>Some become home." },
+  { date: 8, text: "You already chose me once.<br>I still choose you every day." },
+  { date: 9, text: "Sweet things are nice.<br>But you calm me." },
+  { date: 10, text: "Some hugs fix things<br>words never can." },
+  { date: 11, text: "I won’t promise perfection.<br>Only presence." },
+  { date: 12, text: "This… this is where<br>I want you to feel safe." },
+  { date: 13, text: "Loving you isn’t loud.<br>It’s steady.<br>It feels like home." }
+];
+
+const today = new Date().getDate();
+
+days.forEach((d, i) => {
+  document.write(`
+    <div class="section">
+      <div class="heart ${today < d.date ? 'locked' : ''}" 
+        onclick="reveal(${i}, ${d.date})">❤️</div>
+      <div class="message" id="msg${i}">
+        ${today < d.date 
+          ? `Come back on Feb ${d.date} 💌` 
+          : d.text}
+      </div>
+    </div>
+  `);
+});
+
+function reveal(i, unlockDate) {
+  if (today < unlockDate) return;
+  document.getElementById("msg" + i).classList.add("show");
+  playSound();
+}
+
+function playSound() {
+  const audio = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-soft-bubble-pop-2018.mp3");
+  audio.play();
+}
+</script>
+
+<!-- Final Section -->
+<div class="section final">
+  <h2>And this…</h2>
+  <p>is where I pause.</p>
+
+  <img src="us.jpg" id="usPic">
+
+  <div class="message show">
+    Happy Valentine Week,<br>
+    my love 🤍
+  </div>
 </div>
 
 <script>
-let day = 0;
-const messages = [
-  "Some flowers fade.<br>Some become home.",
-  "You already chose me once.<br>I still choose you every day.",
-  "Sweet things are nice.<br>But you calm me.",
-  "Some hugs fix things<br>words never can.",
-  "I won’t promise perfection.<br>Only presence.",
-  "This… this is where<br>I want you to feel safe.",
-  "Loving you isn’t loud.<br>It’s steady.<br>It feels like home.<br><br>Happy Valentine Week ❤️"
-];
-
-function startGame() {
-  document.getElementById('welcome').classList.remove('active');
-  document.getElementById('game').classList.add('active');
-  renderHearts();
-}
-
-function renderHearts() {
-  const container = document.getElementById('hearts');
-  container.innerHTML = "";
-  for (let i = 0; i < 7; i++) {
-    const h = document.createElement("span");
-    h.innerHTML = "❤️";
-    h.className = "heart " + (i === day ? "active" : "");
-    if (i === day) h.onclick = nextHeart;
-    container.appendChild(h);
-  }
-}
-
-function nextHeart() {
-  document.getElementById('message').innerHTML = messages[day];
-  day++;
-  if (day < 7) renderHearts();
-}
+setTimeout(() => {
+  document.getElementById("usPic").classList.add("show");
+}, 1000);
 </script>
 
 </body>
