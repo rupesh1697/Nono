@@ -1,191 +1,830 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Tap & Bloom 🌸</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Week for My Love ❤️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
-body {
-  margin: 0;
-  height: 100vh;
-  overflow: hidden;
-  background: radial-gradient(circle at top, #fff6fb, #fde7f1);
-  font-family: 'Poppins', sans-serif;
-}
+```
+    body {
+        font-family: 'Georgia', serif;
+        background: linear-gradient(135deg, #ffeef8 0%, #ffe5f0 100%);
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
 
-/* HUD */
-#counter {
-  position: fixed;
-  top: 14px;
-  width: 100%;
-  text-align: center;
-  font-size: 14px;
-  opacity: 0.6;
-  pointer-events: none;
-}
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
 
-/* Flowers */
-.flower {
-  position: absolute;
-  font-size: 36px;
-  animation: pop 0.5s ease forwards, float 8s ease-in-out infinite;
-  pointer-events: none;
-}
+    .header {
+        text-align: center;
+        padding: 40px 20px;
+        background: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
+        color: white;
+        border-radius: 20px;
+        margin-bottom: 40px;
+        box-shadow: 0 10px 30px rgba(255, 107, 157, 0.3);
+    }
 
-@keyframes pop {
-  from { transform: scale(0); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
+    .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
 
-@keyframes float {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-14px); }
-  100% { transform: translateY(0); }
-}
+    .header p {
+        font-size: 1.2em;
+        opacity: 0.95;
+    }
 
-/* Rose explosion */
-.explosion {
-  position: absolute;
-  font-size: 42px;
-  animation: explode 1s ease-out forwards;
-  pointer-events: none;
-}
+    .days-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
 
-@keyframes explode {
-  from { transform: scale(0.4); opacity: 1; }
-  to { transform: translate(var(--x), var(--y)) scale(1.2); opacity: 0; }
-}
+    .day-card {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
 
-/* Final reveal */
-#final {
-  position: fixed;
-  inset: 0;
-  background: rgba(255,255,255,0.94);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 24px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 2.5s ease;
-}
+    .day-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(255, 107, 157, 0.3);
+    }
 
-#final.show {
-  opacity: 1;
-  pointer-events: auto;
-}
+    .day-card.locked {
+        opacity: 0.6;
+        cursor: not-allowed;
+        background: #f5f5f5;
+    }
 
-#final img {
-  width: 80%;
-  max-width: 360px;
-  border-radius: 18px;
-  margin-bottom: 18px;
-  opacity: 0;
-  transform: scale(0.96);
-  transition: opacity 2s ease, transform 2s ease;
-}
+    .day-card.locked:hover {
+        transform: none;
+    }
 
-#final.show img {
-  opacity: 1;
-  transform: scale(1);
-}
+    .day-number {
+        font-size: 3em;
+        font-weight: bold;
+        color: #ff6b9d;
+        margin-bottom: 10px;
+    }
 
-#final .tag {
-  font-size: 18px;
-  line-height: 1.6;
-}
+    .day-name {
+        font-size: 1.5em;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .day-date {
+        font-size: 0.9em;
+        color: #666;
+    }
+
+    .lock-icon {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 1.5em;
+    }
+
+    /* Task Screen Styles */
+    .task-screen {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: linear-gradient(135deg, #ffeef8 0%, #ffe5f0 100%);
+        z-index: 1000;
+        overflow: hidden;
+    }
+
+    .task-screen.active {
+        display: block;
+    }
+
+    .close-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        border: none;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        font-size: 1.5em;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        z-index: 1001;
+        transition: all 0.3s ease;
+    }
+
+    .close-btn:hover {
+        transform: scale(1.1);
+        background: #ff6b9d;
+        color: white;
+    }
+
+    .task-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        padding: 20px;
+        position: relative;
+    }
+
+    .instruction {
+        font-size: 1.5em;
+        color: #ff6b9d;
+        text-align: center;
+        margin-bottom: 20px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+
+    .counter {
+        font-size: 3em;
+        color: #ff6b9d;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .flower {
+        position: absolute;
+        font-size: 2em;
+        animation: bloom 0.5s ease-out;
+        pointer-events: none;
+    }
+
+    @keyframes bloom {
+        0% {
+            transform: scale(0) rotate(0deg);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.5) rotate(180deg);
+            opacity: 1;
+        }
+        100% {
+            transform: scale(1) rotate(360deg);
+            opacity: 1;
+        }
+    }
+
+    .final-message {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 50px rgba(255, 107, 157, 0.5);
+        text-align: center;
+        max-width: 500px;
+        z-index: 1002;
+        animation: fadeInScale 0.5s ease-out;
+    }
+
+    .final-message.show {
+        display: block;
+    }
+
+    @keyframes fadeInScale {
+        0% {
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+        }
+        100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+    }
+
+    .final-message img {
+        max-width: 100%;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .final-message h2 {
+        color: #ff6b9d;
+        margin-bottom: 15px;
+        font-size: 2em;
+    }
+
+    .final-message p {
+        color: #666;
+        font-size: 1.1em;
+        line-height: 1.6;
+    }
+
+    .confetti {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        background: #ff6b9d;
+        position: absolute;
+        animation: confettiFall 3s linear;
+        pointer-events: none;
+    }
+
+    @keyframes confettiFall {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(100vh) rotate(720deg);
+            opacity: 0;
+        }
+    }
+
+    /* Task-specific styles */
+    .heart-collect {
+        position: absolute;
+        font-size: 2em;
+        cursor: pointer;
+        transition: transform 0.2s;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .heart-collect:hover {
+        transform: scale(1.2);
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .love-letter {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        max-width: 600px;
+        margin: 20px;
+    }
+
+    .memory-card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .memory-card:hover {
+        transform: scale(1.05);
+    }
+
+    input[type="text"], textarea {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #ff6b9d;
+        border-radius: 10px;
+        font-size: 1em;
+        margin: 10px 0;
+        font-family: 'Georgia', serif;
+    }
+
+    button {
+        background: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        font-size: 1.1em;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-family: 'Georgia', serif;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 20px rgba(255, 107, 157, 0.4);
+    }
+
+    .promise-check {
+        text-align: left;
+        margin: 10px 0;
+        font-size: 1.1em;
+    }
+
+    .promise-check input {
+        width: auto;
+        margin-right: 10px;
+    }
 </style>
+```
+
 </head>
-
 <body>
+    <div class="container">
+        <div class="header">
+            <h1>💖 Valentine's Week 2025 💖</h1>
+            <p>A Week of Love, Just for You</p>
+        </div>
 
-<div id="counter">Tap gently 🌱</div>
-
-<div id="final">
-  <img src="us.jpg" alt="Us together">
-  <div class="tag">
-    Happy Rose Day, my beautiful phool (Nono) 🌹<br>
-    <strong>— from your fool ❤️</strong>
-  </div>
+```
+    <div class="days-grid" id="daysGrid"></div>
 </div>
 
-<!-- Sounds -->
-<audio id="popSound" preload="auto">
-  <source src="https://assets.mixkit.co/sfx/preview/mixkit-bubble-pop-up-alert-notification-2357.mp3">
-</audio>
-
-<audio id="bgMusic" preload="auto" loop>
-  <source src="https://assets.mixkit.co/music/preview/mixkit-soft-romantic-background-242.mp3">
-</audio>
+<!-- Task Screens -->
+<div class="task-screen" id="taskScreen">
+    <button class="close-btn" onclick="closeTask()">×</button>
+    <div class="task-content" id="taskContent"></div>
+    <div class="final-message" id="finalMessage"></div>
+</div>
 
 <script>
-let taps = 0;
-let musicStarted = false;
+    const valentineDays = [
+        {
+            day: 7,
+            name: "Rose Day",
+            date: "February 7, 2025",
+            emoji: "🌹",
+            task: "rose",
+            taskDescription: "Tap anywhere to bloom 100 roses!",
+            finalImage: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500",
+            finalMessage: "Every rose blooms for you, my love. You bring beauty and joy into my life every single day. Happy Rose Day! 🌹"
+        },
+        {
+            day: 8,
+            name: "Propose Day",
+            date: "February 8, 2025",
+            emoji: "💍",
+            task: "propose",
+            taskDescription: "Read my promises to you",
+            finalMessage: "With all these promises, I choose you today, tomorrow, and forever. Will you be mine? 💍"
+        },
+        {
+            day: 9,
+            name: "Chocolate Day",
+            date: "February 9, 2025",
+            emoji: "🍫",
+            task: "chocolate",
+            taskDescription: "Collect all the sweet hearts!",
+            finalMessage: "Life with you is sweeter than any chocolate. You're my favorite treat! 🍫💝"
+        },
+        {
+            day: 10,
+            name: "Teddy Day",
+            date: "February 10, 2025",
+            emoji: "🧸",
+            task: "teddy",
+            taskDescription: "Give me a warm hug!",
+            finalMessage: "Just like a teddy bear, I want to hold you close and keep you warm forever. 🧸💕"
+        },
+        {
+            day: 11,
+            name: "Promise Day",
+            date: "February 11, 2025",
+            emoji: "🤝",
+            task: "promise",
+            taskDescription: "Write your promise to me",
+            finalMessage: "I promise to love you, cherish you, and stand by you through everything. 🤝💖"
+        },
+        {
+            day: 12,
+            name: "Hug Day",
+            date: "February 12, 2025",
+            emoji: "🤗",
+            task: "hug",
+            taskDescription: "Share your favorite memory",
+            finalMessage: "In your arms is where I feel most at home. Thank you for all the beautiful moments. 🤗💕"
+        },
+        {
+            day: 13,
+            name: "Kiss Day",
+            date: "February 13, 2025",
+            emoji: "💋",
+            task: "kiss",
+            taskDescription: "Trace hearts with your finger",
+            finalMessage: "Every kiss with you feels like the first time. You make my heart skip a beat! 💋❤️"
+        },
+        {
+            day: 14,
+            name: "Valentine's Day",
+            date: "February 14, 2025",
+            emoji: "❤️",
+            task: "valentine",
+            taskDescription: "Open your final love letter",
+            finalMessage: "Happy Valentine's Day, my love! You are my everything. Thank you for being you. ❤️"
+        }
+    ];
 
-const flowers = ["🌸", "🌼", "🌺", "🌷", "🌹", "🪷"];
-const pop = document.getElementById("popSound");
-const music = document.getElementById("bgMusic");
-const final = document.getElementById("final");
+    let currentTask = null;
+    let taskProgress = 0;
 
-document.body.addEventListener("click", bloom);
-document.body.addEventListener("touchstart", bloom, { passive: true });
+    function initializeDays() {
+        const grid = document.getElementById('daysGrid');
+        const today = new Date();
+        
+        valentineDays.forEach(day => {
+            const dayDate = new Date(2025, 1, day.day); // Month is 0-indexed
+            const isUnlocked = today >= dayDate;
+            
+            const card = document.createElement('div');
+            card.className = `day-card ${!isUnlocked ? 'locked' : ''}`;
+            card.innerHTML = `
+                <div class="lock-icon">${isUnlocked ? '✓' : '🔒'}</div>
+                <div class="day-number">${day.day}</div>
+                <div class="day-name">${day.emoji} ${day.name}</div>
+                <div class="day-date">${day.date}</div>
+            `;
+            
+            if (isUnlocked) {
+                card.onclick = () => openTask(day);
+            }
+            
+            grid.appendChild(card);
+        });
+    }
 
-function bloom(e) {
-  taps++;
+    function openTask(day) {
+        currentTask = day;
+        taskProgress = 0;
+        const taskScreen = document.getElementById('taskScreen');
+        const taskContent = document.getElementById('taskContent');
+        
+        taskScreen.classList.add('active');
+        
+        switch(day.task) {
+            case 'rose':
+                setupRoseTask(taskContent, day);
+                break;
+            case 'propose':
+                setupProposeTask(taskContent, day);
+                break;
+            case 'chocolate':
+                setupChocolateTask(taskContent, day);
+                break;
+            case 'teddy':
+                setupTeddyTask(taskContent, day);
+                break;
+            case 'promise':
+                setupPromiseTask(taskContent, day);
+                break;
+            case 'hug':
+                setupHugTask(taskContent, day);
+                break;
+            case 'kiss':
+                setupKissTask(taskContent, day);
+                break;
+            case 'valentine':
+                setupValentineTask(taskContent, day);
+                break;
+        }
+    }
 
-  // start music on first tap
-  if (!musicStarted) {
-    music.volume = 0.35;
-    music.play().catch(()=>{});
-    musicStarted = true;
-  }
+    function closeTask() {
+        document.getElementById('taskScreen').classList.remove('active');
+        document.getElementById('taskContent').innerHTML = '';
+        document.getElementById('finalMessage').classList.remove('show');
+        document.getElementById('finalMessage').innerHTML = '';
+    }
 
-  // vibration on every tap
-  if (navigator.vibrate) navigator.vibrate(15);
+    function setupRoseTask(container, day) {
+        container.innerHTML = `
+            <div class="instruction">${day.taskDescription}</div>
+            <div class="counter" id="counter">0 / 100</div>
+        `;
+        
+        container.onclick = (e) => {
+            if (taskProgress < 100) {
+                taskProgress++;
+                document.getElementById('counter').textContent = `${taskProgress} / 100`;
+                
+                const flower = document.createElement('div');
+                flower.className = 'flower';
+                flower.textContent = '🌹';
+                flower.style.left = e.clientX + 'px';
+                flower.style.top = e.clientY + 'px';
+                container.appendChild(flower);
+                
+                setTimeout(() => flower.remove(), 500);
+                
+                if (taskProgress === 100) {
+                    showFinalMessage(day);
+                }
+            }
+        };
+    }
 
-  // normal flower
-  const f = document.createElement("div");
-  f.className = "flower";
-  const tier = Math.min(Math.floor(taps / 5), flowers.length - 1);
-  f.textContent = flowers[tier];
-  f.style.left = Math.random() * window.innerWidth + "px";
-  f.style.top = Math.random() * window.innerHeight + "px";
-  document.body.appendChild(f);
+    function setupProposeTask(container, day) {
+        const promises = [
+            "I promise to love you unconditionally",
+            "I promise to support your dreams",
+            "I promise to make you laugh every day",
+            "I promise to be your best friend",
+            "I promise to grow old with you"
+        ];
+        
+        container.innerHTML = `
+            <div class="love-letter">
+                <h2 style="color: #ff6b9d; text-align: center; margin-bottom: 20px;">My Promises to You 💍</h2>
+                ${promises.map((p, i) => `
+                    <div class="promise-check">
+                        <input type="checkbox" id="promise${i}" onchange="checkAllPromises()">
+                        <label for="promise${i}">${p}</label>
+                    </div>
+                `).join('')}
+                <button onclick="completePromiseTask()" id="proposeBtn" style="margin-top: 20px; opacity: 0.5; cursor: not-allowed;" disabled>Accept My Proposal 💖</button>
+            </div>
+        `;
+    }
 
-  pop.currentTime = 0;
-  pop.play().catch(()=>{});
+    function checkAllPromises() {
+        const checkboxes = document.querySelectorAll('.promise-check input');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        const btn = document.getElementById('proposeBtn');
+        
+        if (allChecked) {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+        }
+    }
 
-  // rose explosion every 10 taps
-  if (taps % 10 === 0) {
-    roseExplosion(e.clientX || window.innerWidth/2, e.clientY || window.innerHeight/2);
-  }
+    function completePromiseTask() {
+        showFinalMessage(currentTask);
+    }
 
-  // final reveal at 100 taps
-  if (taps === 100) {
-    setTimeout(() => final.classList.add("show"), 600);
-  }
+    function setupChocolateTask(container, day) {
+        container.innerHTML = `
+            <div class="instruction">${day.taskDescription}</div>
+            <div class="counter" id="counter">0 / 20</div>
+        `;
+        
+        taskProgress = 0;
+        
+        function createHeart() {
+            if (taskProgress >= 20) return;
+            
+            const heart = document.createElement('div');
+            heart.className = 'heart-collect';
+            heart.textContent = '💝';
+            heart.style.left = Math.random() * (window.innerWidth - 50) + 'px';
+            heart.style.top = Math.random() * (window.innerHeight - 50) + 'px';
+            heart.style.animationDelay = Math.random() * 2 + 's';
+            
+            heart.onclick = () => {
+                taskProgress++;
+                document.getElementById('counter').textContent = `${taskProgress} / 20`;
+                heart.remove();
+                
+                if (taskProgress < 20) {
+                    createHeart();
+                    createHeart();
+                } else {
+                    showFinalMessage(day);
+                }
+            };
+            
+            container.appendChild(heart);
+        }
+        
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => createHeart(), i * 200);
+        }
+    }
 
-  setTimeout(() => f.remove(), 10000);
-}
+    function setupTeddyTask(container, day) {
+        container.innerHTML = `
+            <div class="instruction">Hold down the teddy for a warm hug! 🧸</div>
+            <div class="counter" id="counter">Hold for 5 seconds...</div>
+            <div style="font-size: 150px; cursor: pointer; user-select: none;" id="teddy">🧸</div>
+        `;
+        
+        let holdTimer;
+        let holdProgress = 0;
+        const teddy = document.getElementById('teddy');
+        const counter = document.getElementById('counter');
+        
+        function startHold() {
+            holdTimer = setInterval(() => {
+                holdProgress++;
+                counter.textContent = `${5 - holdProgress} seconds...`;
+                teddy.style.transform = `scale(${1 + holdProgress * 0.1})`;
+                
+                if (holdProgress >= 5) {
+                    clearInterval(holdTimer);
+                    showFinalMessage(day);
+                }
+            }, 1000);
+        }
+        
+        function stopHold() {
+            clearInterval(holdTimer);
+            holdProgress = 0;
+            counter.textContent = 'Hold for 5 seconds...';
+            teddy.style.transform = 'scale(1)';
+        }
+        
+        teddy.addEventListener('mousedown', startHold);
+        teddy.addEventListener('mouseup', stopHold);
+        teddy.addEventListener('mouseleave', stopHold);
+        teddy.addEventListener('touchstart', startHold);
+        teddy.addEventListener('touchend', stopHold);
+    }
 
-function roseExplosion(cx, cy) {
-  for (let i = 0; i < 14; i++) {
-    const r = document.createElement("div");
-    r.className = "explosion";
-    r.textContent = "🌹";
-    r.style.left = (cx - 20) + "px";
-    r.style.top = (cy - 20) + "px";
-    r.style.setProperty("--x", (Math.random()*220 - 110) + "px");
-    r.style.setProperty("--y", (Math.random()*220 - 110) + "px");
-    document.body.appendChild(r);
-    setTimeout(() => r.remove(), 1200);
-  }
-  if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
-}
+    function setupPromiseTask(container, day) {
+        container.innerHTML = `
+            <div class="love-letter">
+                <h2 style="color: #ff6b9d; text-align: center; margin-bottom: 20px;">Write Your Promise 🤝</h2>
+                <p style="text-align: center; margin-bottom: 20px;">What do you promise me?</p>
+                <textarea id="promiseText" rows="6" placeholder="I promise to..."></textarea>
+                <button onclick="submitPromise()">Seal My Promise 💖</button>
+            </div>
+        `;
+    }
+
+    function submitPromise() {
+        const text = document.getElementById('promiseText').value;
+        if (text.trim()) {
+            showFinalMessage(currentTask);
+        } else {
+            alert('Please write your promise first! 💕');
+        }
+    }
+
+    function setupHugTask(container, day) {
+        container.innerHTML = `
+            <div class="love-letter">
+                <h2 style="color: #ff6b9d; text-align: center; margin-bottom: 20px;">Share a Memory 🤗</h2>
+                <p style="text-align: center; margin-bottom: 20px;">Tell me about your favorite moment we've shared together</p>
+                <textarea id="memoryText" rows="6" placeholder="My favorite memory with you is..."></textarea>
+                <button onclick="submitMemory()">Share Memory 💕</button>
+            </div>
+        `;
+    }
+
+    function submitMemory() {
+        const text = document.getElementById('memoryText').value;
+        if (text.trim()) {
+            showFinalMessage(currentTask);
+        } else {
+            alert('Please share your memory first! 💕');
+        }
+    }
+
+    function setupKissTask(container, day) {
+        container.innerHTML = `
+            <div class="instruction">Draw 10 hearts with your finger! 💋</div>
+            <div class="counter" id="counter">0 / 10</div>
+            <canvas id="kissCanvas" style="border: 2px solid #ff6b9d; border-radius: 10px; cursor: crosshair;"></canvas>
+        `;
+        
+        const canvas = document.getElementById('kissCanvas');
+        canvas.width = Math.min(500, window.innerWidth - 40);
+        canvas.height = Math.min(500, window.innerHeight - 200);
+        const ctx = canvas.getContext('2d');
+        
+        let drawing = false;
+        let currentPath = [];
+        let heartsDrawn = 0;
+        
+        function startDrawing(e) {
+            drawing = true;
+            currentPath = [];
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            currentPath.push({x, y});
+        }
+        
+        function draw(e) {
+            if (!drawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            
+            ctx.strokeStyle = '#ff6b9d';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            
+            if (currentPath.length > 0) {
+                ctx.beginPath();
+                ctx.moveTo(currentPath[currentPath.length - 1].x, currentPath[currentPath.length - 1].y);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            }
+            
+            currentPath.push({x, y});
+        }
+        
+        function stopDrawing() {
+            if (drawing && currentPath.length > 10) {
+                heartsDrawn++;
+                document.getElementById('counter').textContent = `${heartsDrawn} / 10`;
+                
+                // Draw a heart emoji at the center
+                const centerX = currentPath.reduce((sum, p) => sum + p.x, 0) / currentPath.length;
+                const centerY = currentPath.reduce((sum, p) => sum + p.y, 0) / currentPath.length;
+                ctx.font = '30px Arial';
+                ctx.fillText('💖', centerX - 15, centerY + 10);
+                
+                if (heartsDrawn >= 10) {
+                    setTimeout(() => showFinalMessage(day), 500);
+                }
+            }
+            drawing = false;
+            currentPath = [];
+        }
+        
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', stopDrawing);
+    }
+
+    function setupValentineTask(container, day) {
+        container.innerHTML = `
+            <div class="love-letter" style="max-width: 700px;">
+                <h2 style="color: #ff6b9d; text-align: center; margin-bottom: 20px;">My Final Love Letter ❤️</h2>
+                <p style="line-height: 1.8; font-size: 1.1em; color: #555;">
+                    My Dearest Love,<br><br>
+                    
+                    This Valentine's Week has been my way of showing you what you mean to me. 
+                    Every day, every moment with you is a gift I cherish deeply.<br><br>
+                    
+                    You are my sunrise and my sunset, my laughter and my peace. 
+                    With you, I've found a love that makes every day feel like Valentine's Day.<br><br>
+                    
+                    Thank you for being you. Thank you for choosing me. Thank you for this beautiful journey we're on together.<br><br>
+                    
+                    I love you more than words can express, today and always.<br><br>
+                    
+                    Forever yours,<br>
+                    Your Love 💕
+                </p>
+                <button onclick="showFinalMessage(currentTask)" style="margin-top: 20px;">I Love You Too ❤️</button>
+            </div>
+        `;
+    }
+
+    function showFinalMessage(day) {
+        const finalMsg = document.getElementById('finalMessage');
+        finalMsg.innerHTML = `
+            ${day.finalImage ? `<img src="${day.finalImage}" alt="${day.name}">` : ''}
+            <h2>${day.emoji} ${day.name}</h2>
+            <p>${day.finalMessage}</p>
+        `;
+        finalMsg.classList.add('show');
+        
+        // Create confetti
+        for (let i = 0; i < 100; i++) {
+            setTimeout(() => createConfetti(), i * 30);
+        }
+    }
+
+    function createConfetti() {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * window.innerWidth + 'px';
+        confetti.style.top = '-10px';
+        confetti.style.background = ['#ff6b9d', '#ff8fab', '#ffa8c5', '#ffcce0', '#ff1493'][Math.floor(Math.random() * 5)];
+        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        document.body.appendChild(confetti);
+        
+        setTimeout(() => confetti.remove(), 4000);
+    }
+
+    // Initialize on page load
+    initializeDays();
 </script>
+```
 
 </body>
 </html>
